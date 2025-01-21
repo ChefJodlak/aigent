@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "aigent-py"
-version = "0.1.0"
+version = "0.1.1"
 description = "An AI agent that processes natural language commands through LLM and executes corresponding actions"
 authors = ["Rafal Jodelka <rafaljodlak@gmail.com>"]
 readme = "README.md"
