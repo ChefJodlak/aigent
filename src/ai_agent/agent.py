@@ -20,29 +20,45 @@ class Agent:
         client (AsyncOpenAI): OpenAI API client for language model interactions
         command_registry (Optional[CommandRegistry]): Registry of available commands
         prompt_manager (SystemPromptManager): Manager for system prompts
+        model_name (str): Name of the OpenAI model to use (e.g., "gpt-3.5-turbo")
+        max_tokens (int): Maximum number of tokens in model responses (default: 2048)
+        temperature (float): Controls randomness in the model's output (0.0 to 1.0)
+        frequency_penalty (float): Reduces repetition by penalizing frequent tokens (-2.0 to 2.0)
+        presence_penalty (float): Encourages diversity by penalizing used tokens (-2.0 to 2.0)
     """
 
     def __init__(
         self,
         agent_purpose: str,
-        base_url: Optional[str] = None,
-        api_key: Optional[str] = None
+        base_url: str,
+        api_key: str,
+        model_name: str,
+        max_tokens: int = 2048,
+        temperature: float = 0.7,
+        frequency_penalty: float = 0.0,
+        presence_penalty: float = 0.0
     ):
         """
-        Initialize the AI Agent with OpenAI client configuration and purpose.
+        Initialize the AI Agent.
         
         Args:
             agent_purpose (str): Description of the agent's purpose and capabilities
-            base_url (Optional[str]): Base URL for OpenAI API. Defaults to environment variable
-            api_key (Optional[str]): OpenAI API key. Defaults to environment variable
+            base_url (str): Base URL for the OpenAI API
+            api_key (str): OpenAI API key
+            model_name (str): Name of the model to use (default: "gpt-3.5-turbo")
+            max_tokens (int): Maximum number of tokens for responses (default: 1000)
+            temperature (float): Controls randomness in output (0.0 to 1.0, default: 0.7)
+            frequency_penalty (float): Reduces repetition (-2.0 to 2.0, default: 0.0)
+            presence_penalty (float): Encourages diversity (-2.0 to 2.0, default: 0.0)
         """
-        # Configure OpenAI client
-        self.client = AsyncOpenAI(
-            base_url=(base_url or os.getenv("OPENAI_BASE_URL", "")).rstrip('/') + '/v1/',
-            api_key=api_key or os.getenv("OPENAI_API_KEY")
-        )
-        self.command_registry: Optional[CommandRegistry] = None
+        self.client = AsyncOpenAI(base_url=base_url, api_key=api_key)
         self.prompt_manager = SystemPromptManager(agent_purpose)
+        self.command_registry = None
+        self.model_name = model_name
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self.frequency_penalty = frequency_penalty
+        self.presence_penalty = presence_penalty
         
     def initialize_commands(self, command_registry: CommandRegistry) -> None:
         """
@@ -105,8 +121,6 @@ class Agent:
         """
         if not self.command_registry:
             return None
-            
-        print(f"Attempting to match text: '{text}'")  # Debug print
         
         # Clean up the text
         text = text.strip()
@@ -114,11 +128,9 @@ class Agent:
         # Look for command pattern in square brackets
         command_match = re.search(r'\[\[(.*?)\]\]', text)
         if not command_match:
-            print("No command pattern found")
             return None
             
         command_text = command_match.group(1)
-        print(f"Found command text: {command_text}")
         
         # Try to match with registered commands
         for name, metadata in self.command_registry.commands.items():
@@ -127,15 +139,12 @@ class Agent:
             for var in metadata.variables:
                 var_pattern = var_pattern.replace("{" + var.name + "}", f"(?P<{var.name}>[^}}]*)")
             
-            print(f"Trying to match against pattern: {var_pattern}")
             match = re.match(f"^{var_pattern}$", command_text)
             
             if match:
                 variables = match.groupdict()
-                print(f"Found match with variables: {variables}")
                 return name, variables
                 
-        print("No matching command found")
         return None
     
     def _execute_command(self, command_name: str, variables: Dict[str, str]) -> tuple[str, bool]:
@@ -187,15 +196,14 @@ class Agent:
             {"role": "user", "content": user_input}
         ]
         
-        model = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
-        max_tokens = int(os.getenv("MAX_TOKENS", "1000"))
-        
         stream = await self.client.chat.completions.create(
-            model=model,
+            model=self.model_name,
             messages=messages,
             stream=True,
-            max_tokens=max_tokens,
-            temperature=0.7
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
+            frequency_penalty=self.frequency_penalty,
+            presence_penalty=self.presence_penalty
         )
         
         async for chunk in stream:
@@ -229,15 +237,14 @@ class Agent:
             {"role": "user", "content": f"Format this result: {result}"}
         ]
         
-        model = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
-        max_tokens = int(os.getenv("MAX_TOKENS", "1000"))
-        
         stream = await self.client.chat.completions.create(
-            model=model,
+            model=self.model_name,
             messages=messages,
             stream=True,
-            max_tokens=max_tokens,
-            temperature=0.7
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
+            frequency_penalty=self.frequency_penalty,
+            presence_penalty=self.presence_penalty
         )
         
         async for chunk in stream:
@@ -271,15 +278,14 @@ class Agent:
             {"role": "user", "content": f"Handle this error: {error}"}
         ]
         
-        model = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
-        max_tokens = int(os.getenv("MAX_TOKENS", "1000"))
-        
         stream = await self.client.chat.completions.create(
-            model=model,
+            model=self.model_name,
             messages=messages,
             stream=True,
-            max_tokens=max_tokens,
-            temperature=0.7
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
+            frequency_penalty=self.frequency_penalty,
+            presence_penalty=self.presence_penalty
         )
         
         async for chunk in stream:

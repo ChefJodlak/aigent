@@ -14,13 +14,15 @@ The example shows how to:
 - Initialize and use the AI Agent
 """
 
-import os
 import asyncio
-from dotenv import load_dotenv
 from src.ai_agent.agent import Agent
 from src.commands.base import command, CommandRegistry, VariableMetadata
 
+# Create a command registry for this agent
+registry = CommandRegistry()
+
 @command(
+    registry=registry,  # Pass the registry instance explicitly
     name="generate_wallet",
     description="Generates a new cryptocurrency wallet",
     explanation="Creates a secure cryptocurrency wallet with public and private keys using industry-standard encryption. The wallet is uniquely associated with the user's ID for future reference.",
@@ -152,29 +154,26 @@ async def main():
     Example usage of the AI Agent with wallet generation command.
     
     This function demonstrates:
-    1. Loading environment variables
-    2. Initializing the AI Agent with a specific purpose
-    3. Setting up the command registry
-    4. Processing a natural language request
-    5. Handling the streaming response
+    1. Configuring the AI Agent
+    2. Setting up the command registry
+    3. Processing a natural language request
+    4. Handling the streaming response
     """
-    # Load environment variables from .env file
-    load_dotenv()
-    
-    # Initialize the agent with its purpose
+    # Initialize the agent with configuration
     agent = Agent(
         agent_purpose="""I am a cryptocurrency assistant that helps users manage their digital assets.
 I can create wallets, provide information about cryptocurrencies, and assist with basic operations.
 I aim to make cryptocurrency management simple and accessible for all users.""",
-        base_url=os.getenv("OPENAI_BASE_URL"),
-        api_key=os.getenv("OPENAI_API_KEY")
+        base_url="https://api.openai.com/v1",  # OpenAI API base URL
+        api_key="your-api-key-here",           # Replace with your actual API key
+        model_name="gpt-3.5-turbo",            # Optionally specify a different model
+        max_tokens=1000                         # Optionally adjust max tokens
     )
     
-    # Initialize commands
-    registry = CommandRegistry.get_instance()
+    # Initialize commands with our registry
     agent.initialize_commands(registry)
     
-    # Example: Generate a wallet (user_id will be appended by frontend)
+    # Example: Generate a wallet
     print("Testing wallet generation...")
     async for response_chunk in agent.process_input(
         "I need a new cryptocurrency wallet"

@@ -143,6 +143,7 @@ class CommandRegistry:
         }
 
 def command(
+    registry: CommandRegistry,
     name: str,
     description: str,
     explanation: str,
@@ -157,13 +158,8 @@ def command(
     """
     Decorator to register a function as a command.
     
-    This decorator wraps a function with command metadata and registers it
-    in the CommandRegistry. It handles:
-    1. Command registration
-    2. Metadata validation
-    3. Response formatting setup
-    
     Args:
+        registry (CommandRegistry): Registry to register the command in
         name (str): Unique identifier for the command
         description (str): Short description of what the command does
         explanation (str): Detailed explanation of the command's functionality
@@ -174,10 +170,6 @@ def command(
         example_failed_responses (List[Dict[str, str]]): Example error responses
         result_prompt (str): Template for formatting successful results
         unsuccessful_prompt (str): Template for formatting error messages
-        
-    Returns:
-        Callable[[Callable[..., T]], Callable[..., T]]: Decorated function that
-            maintains its original signature while adding command functionality
     """
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         @wraps(func)
@@ -214,6 +206,6 @@ def command(
             example_success_responses=example_success_responses,
             example_failed_responses=example_failed_responses
         )
-        CommandRegistry.get_instance().register(metadata)
+        registry.register(metadata)
         return wrapper
     return decorator 

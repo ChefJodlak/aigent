@@ -32,6 +32,23 @@ class VariableMetadata:
 
 @dataclass
 class CommandMetadata:
+    """
+    Metadata for a command in the prompt management system.
+    
+    This class defines the structure for command metadata used in prompt generation.
+    It includes all the information needed to format system prompts and handle
+    command responses.
+    
+    Attributes:
+        name (str): Unique identifier for the command
+        description (str): Short description of what the command does
+        explanation (str): Detailed explanation of how the command works
+        pattern (str): Pattern string with variable placeholders
+        variables (List[VariableMetadata]): List of variables used in the pattern
+        example_inputs (List[str]): Example natural language inputs
+        result_prompt (str): Template for formatting successful results
+        unsuccessful_prompt (str): Template for handling command failures
+    """
     name: str
     description: str
     explanation: str  # Detailed explanation of how the command works
