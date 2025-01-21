@@ -85,14 +85,14 @@ registry = CommandRegistry()
             "result": "Generated wallet with address: 0x123...",
             "response": """Great news! I've generated your new cryptocurrency wallet.
             
-Wallet Details:
-✓ Address: 0x123...
-✓ Status: Active and ready
+                            Wallet Details:
+                            ✓ Address: 0x123...
+                            ✓ Status: Active and ready
 
-Next steps:
-1. Back up your credentials
-2. Set up 2FA
-3. You're ready to receive crypto!"""
+                            Next steps:
+                            1. Back up your credentials
+                            2. Set up 2FA
+                            3. You're ready to receive crypto!"""
         }
     ],
     # Example responses for error handling
@@ -101,12 +101,12 @@ Next steps:
             "result": "Error: Network connection failed",
             "response": """I couldn't generate your wallet due to network issues.
 
-Troubleshooting steps:
-1. Check your connection
-2. Wait a few minutes
-3. Try again
+                            Troubleshooting steps:
+                            1. Check your connection
+                            2. Wait a few minutes
+                            3. Try again
 
-Your security wasn't compromised. Want to retry?"""
+                            Your security wasn't compromised. Want to retry?"""
         }
     ],
     # Template for formatting successful results
@@ -119,18 +119,6 @@ Explain what went wrong and provide next steps.
 Examples of good responses: {examples}"""
 )
 def generate_wallet(user_id: str) -> str:
-    """
-    Generate a new cryptocurrency wallet.
-    
-    Args:
-        user_id (str): The user's unique identifier
-        
-    Returns:
-        str: Success message with wallet address
-        
-    Raises:
-        ValueError: If wallet generation fails
-    """
     if user_id == "error":
         raise ValueError("Wallet generation failed")
     return f"Generated wallet with address: 0x{user_id}123..."
