@@ -1,13 +1,13 @@
-# 🤖 Aigent
+# 🤖 Aigent-py
 
-[![PyPI version](https://badge.fury.io/py/aigent.svg)](https://badge.fury.io/py/aigent)
-[![Python Version](https://img.shields.io/pypi/pyversions/aigent.svg)](https://pypi.org/project/aigent/)
+[![PyPI version](https://badge.fury.io/py/aigent-py.svg)](https://badge.fury.io/py/aigent-py)
+[![Python Version](https://img.shields.io/pypi/pyversions/aigent-py.svg)](https://pypi.org/project/aigent-py/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 > A powerful AI agent framework for natural language command processing using LLMs.
 
-Aigent is a Python framework that enables seamless integration of natural language commands with your applications. Built on top of OpenAI's GPT models, it provides a flexible command system that translates natural language into structured actions.
+Aigent-py is a Python framework that enables seamless integration of natural language commands with your applications. Built on top of OpenAI's GPT models, it provides a flexible command system that translates natural language into structured actions.
 
 ## ✨ Features
 
@@ -23,15 +23,15 @@ Aigent is a Python framework that enables seamless integration of natural langua
 ### Installation
 
 ```bash
-pip install aigent
+pip install aigent-py
 # or with Poetry
-poetry add aigent
+poetry add aigent-py
 ```
 
 ### Basic Usage
 
 ```python
-from aigent import Agent
+from aigent_py import Agent
 
 # Initialize the agent with custom parameters
 agent = Agent(
@@ -53,10 +53,10 @@ async def main():
 
 ### Creating Custom Commands
 
-The command system in Aigent is powerful and flexible. Here's a comprehensive example showing advanced features:
+The command system in Aigent-py is powerful and flexible. Here's a comprehensive example showing advanced features:
 
 ```python
-from aigent.commands import CommandRegistry, command, VariableMetadata
+from aigent_py.commands import CommandRegistry, command, VariableMetadata
 
 # Create a command registry
 registry = CommandRegistry()
